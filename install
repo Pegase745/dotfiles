@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Install GNU Stow
+hash stow &> /dev/null || yay -S stow
+
+# Symlink rcfiles
+for f in *; do
+    if [[ -d $f ]]; then
+        # $f is a directory
+        stow $f
+        echo "Symlinked $f"
+    fi
+done
+
+xrdb -merge ~/.Xresources
