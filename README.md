@@ -10,7 +10,7 @@ tool for setting up the dotfiles.
 Clone this repository in your **$HOME** folder:
 
 ```sh
-git clone --recursive https://github.com/Pegase745/dotfiles.git ~/.dotfiles
+git clone git@github.com:Pegase745/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 stow -n git		# To simulate changes
 ./install 		# To write changes
