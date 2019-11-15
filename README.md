@@ -1,7 +1,5 @@
 # dotfiles
 
-## Usage
-
 The files in this repository must be symlinked to their respective paths in the
 $HOME folder. We can do this manually or using [GNU Stow](https://www.gnu.org/software/stow/).
 Since GNU Stow can automatically manage symlinked files, it is the recommended
