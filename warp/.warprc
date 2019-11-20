@@ -1,3 +1,6 @@
 dot:~/.dotfiles
 github:~/dev/github
 dev:~/dev
+mokaco:~/dev/mokaco
+sublime:~/.config/sublime-text-3/Packages
+flowtype:~/.config/sublime-text-3/Packages/FlowType

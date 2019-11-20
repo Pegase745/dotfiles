@@ -55,3 +55,6 @@ alias stop='fig kill && fig rm -f'
 export ACK_PAGER="less -R -S -X"
 
 alias ll="ls -ltrha"
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
