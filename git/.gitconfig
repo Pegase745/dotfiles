@@ -25,6 +25,7 @@
     lgfull      = log --pretty=fuller --graph --stat -p
     lgline      = "!f() { git log --pretty=short -L $1,$1:$2; }; f"
     m		    = checkout master
+    nbcommits	= !git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative master..$1
     notmerged   = branch -a --no-merged
     pr		    = pull --rebase
     rb		    = rebase origin/master
@@ -90,3 +91,18 @@
 
 [status]
     showUntrackedFiles = all
+
+[merge "npm-merge-driver"]
+	name = automatically merge npm lockfiles
+	driver = npx npm-merge-driver merge %A %O %B %P
+
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[init]
+	defaultBranch = master
+[user]
+	name = Michel Nemnom
+	email = 1678801+Pegase745@users.noreply.github.com

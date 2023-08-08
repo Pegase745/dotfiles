@@ -1,0 +1,9 @@
+name: op
+root: ~/
+
+windows:
+  - app:
+      layout: even-vertical
+      panes:
+        - wd front && yarn start
+        - wd api && yarn start

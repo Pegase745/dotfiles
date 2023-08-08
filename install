@@ -1,15 +1,50 @@
 #!/bin/sh
 
-# Install GNU Stow
-hash stow &> /dev/null || yay -S stow
+# Check if the --delete option is passed
+if [[ "$1" == "--delete" ]]; then
+    DELETE_MODE=1
+else
+    DELETE_MODE=0
+fi
 
-# Symlink rcfiles
-for f in *; do
-    if [[ -d $f ]]; then
-        # $f is a directory
-        stow $f
-        echo "Symlinked $f"
+# Install GNU Stow if not installed
+hash stow &> /dev/null
+if [[ $? -ne 0 ]]; then
+    OS=$(uname -s)
+    if [[ "$OS" == "Darwin" ]]; then
+        # If macOS
+        brew install stow
+    else
+        # Default to ArchLinux behavior
+        yay -S stow
     fi
-done
+fi
 
-xrdb -merge ~/.Xresources
+# Function to handle symlinking or deleting the symlinks
+handle_stow() {
+    for f in *; do
+        if [[ -d $f ]]; then
+            if [[ $DELETE_MODE -eq 1 ]]; then
+                stow -D $f
+                echo "Removed symlink for $f"
+            elif [[ $f != *"[skip]"* ]]; then  # only check for [skip] when creating symlinks
+                stow $f
+                echo "Symlinked $f"
+            else
+                echo "Skipping symlink for directory (due to [skip] tag): $f"
+            fi
+        else
+            echo "Skipping $f as it's not a directory."
+        fi
+    done
+}
+
+handle_stow
+
+# Load X resources using xrdb if on Linux
+if [[ $(uname -s) == "Linux" ]]; then
+    if [[ -f ~/.Xresources ]]; then
+        xrdb -merge ~/.Xresources
+        echo "Loaded X resources using xrdb."
+    fi
+fi
