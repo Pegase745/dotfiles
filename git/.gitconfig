@@ -5,9 +5,13 @@
 [alias]
     a           = add -p
     amend       = commit -a --amend
-    autosquash  = rebase -i --autosquash 
-    bclean      = "!f() { git branch --merged ${1-master} | grep -v " ${1-master}$" | xargs -r git branch -d; }; f"
-    bdone       = "!f() { git checkout ${1-master} && git up && git bclean ${1-master}; }; f"
+    autosquash  = rebase -i --autosquash
+    # Get default branch name dynamically
+    default-branch = "!git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'"
+    # Clean merged branches relative to default branch
+    bclean      = "!f() { DEFAULT=$(git default-branch); git branch --merged ${1-$DEFAULT} | grep -v \" ${1-$DEFAULT}$\" | xargs -r git branch -d; }; f"
+    # Switch to default branch, update, and clean
+    bdone       = "!f() { DEFAULT=$(git default-branch); git checkout ${1-$DEFAULT} && git up && git bclean ${1-$DEFAULT}; }; f"
     br          = branch -vv
     cm          = !git add -A && git commit -s
     co          = checkout
@@ -18,32 +22,36 @@
     di          = diff --color-words
     discard     = checkout --
     ec          = config --global -e
-    fx		    = commit --fixup
+    fx          = commit --fixup
     lasttagcm   = log `git describe --tags --abbrev=0`..HEAD --pretty=oneline
-    local	    = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }' 
+    local       = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
     lg          = log --graph --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s   %Cgreen(%an %ar)%Creset'
     lgfull      = log --pretty=fuller --graph --stat -p
     lgline      = "!f() { git log --pretty=short -L $1,$1:$2; }; f"
-    m		    = checkout master
-    nbcommits	= !git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative master..$1
+    # Switch to default branch
+    m           = "!git checkout $(git default-branch)"
+    # Count commits ahead of default branch
+    nbcommits   = "!f() { DEFAULT=$(git default-branch); git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $DEFAULT..$1; }; f"
     notmerged   = branch -a --no-merged
-    pr		    = pull --rebase
-    rb		    = rebase origin/master
-    rba   	    = rebase --abort
-    rbc		    = rebase --continue
-    rbs		    = rebase --skip
+    pr          = pull --rebase
+    # Rebase on default branch
+    rb          = "!git rebase origin/$(git default-branch)"
+    rba         = rebase --abort
+    rbc         = rebase --continue
+    rbs         = rebase --skip
     save        = !git add -A && git commit -m 'SAVEPOINT'
-    s           = !git save	
+    s           = !git save
     sn          = !git save -n
     st          = status
     squash      = rebase -i @{u}
     tag-version = describe origin/stable --tags --abbrev=0
     undo        = reset HEAD~1 --mixed
-    u		    = !git undo
+    u           = !git undo
     undomerge   = reset --hard ORIG_HEAD
     unstage     = reset HEAD
     up          = !git pull --rebase --prune $@ && git submodule update --init --recursive
-    upstream    = !git fetch upstream && git rebase upstream/master 
+    # Rebase on upstream default branch
+    upstream    = "!f() { git fetch upstream && git rebase upstream/$(git default-branch); }; f"
     whatrelease = name-rev --name-only
     who         = shortlog -s --
     wipe        = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
