@@ -10,6 +10,8 @@
     default-branch = "!git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'"
     # Clean merged branches relative to default branch
     bclean      = "!f() { DEFAULT=$(git default-branch); git branch --merged ${1-$DEFAULT} | grep -v \" ${1-$DEFAULT}$\" | xargs -r git branch -d; }; f"
+    # Clean even those that were tracking a remote but remote is gone, and those that have no tracking at all
+    bcleanall   = "!f() { DEFAULT=$(git default-branch); git fetch --prune; git branch -vv | grep -E ': gone]|^[^[]*$' | awk '{print $1}' | xargs -r git branch -D; }; f"
     # Switch to default branch, update, and clean
     bdone       = "!f() { DEFAULT=$(git default-branch); git checkout ${1-$DEFAULT} && git up && git bclean ${1-$DEFAULT}; }; f"
     br          = branch -vv
@@ -95,7 +97,8 @@
     log           = true
 
 [push]
-    default = simple
+    default         = simple
+    autoSetupRemote = true
 
 [status]
     showUntrackedFiles = all
