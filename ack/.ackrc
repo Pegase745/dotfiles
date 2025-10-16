@@ -10,6 +10,9 @@
 --ignore-dir=.jest-cache
 --ignore-dir=.dynamodb
 --ignore-dir=.next
+--ignore-dir=.docusaurus
+--ignore-dir=.yarn
+--ignore-dir=.nx
 --ignore-dir=out
 --ignore-dir=storybook-static
 --ignore-file=is:coverage
